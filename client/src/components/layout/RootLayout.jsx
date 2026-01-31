@@ -1,12 +1,23 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import pb from '../../lib/pocketbase';
 
 export default function RootLayout() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const navigate = useNavigate();
-    const isLoggedIn = pb.authStore.isValid;
-    const user = pb.authStore.model;
+    // Use state to force re-render on auth changes
+    const [authModel, setAuthModel] = useState(pb.authStore.model);
+
+    useEffect(() => {
+        // Subscribe to changes (login/logout)
+        const unsub = pb.authStore.onChange((token, model) => {
+            setAuthModel(model);
+        });
+        return () => unsub();
+    }, []);
+
+    const user = authModel;
+    const isLoggedIn = !!authModel;
 
     const handleLogout = () => {
         pb.authStore.clear();
