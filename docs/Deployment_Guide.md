@@ -175,3 +175,50 @@ Visit `http://<YOUR_STATIC_IP>/_/` for the backend.
    - Run: `ls -l ~/allies-connect/pb_public/`
    - You should see `index.html` and an `assets` folder.
    - If `pb_public` is empty, go back to Step 3.4.
+
+---
+
+## Updates & Maintenance
+
+### Deploying New Changes
+To update your deployed application (frontend changes or code updates):
+
+1.  **Local Machine**: Build and Push
+    ```bash
+    # In 'client' directory
+    npm run build
+    
+    # In project root
+    git add client/dist -f
+    git commit -m "Deploy: Update frontend and code"
+    git push origin deployment
+    ```
+
+2.  **Server**: Pull and Refresh
+    ```bash
+    cd ~/allies-connect/source_code
+    
+    # 1. Get latest code
+    git pull origin deployment
+    
+    # 2. Update frontend assets (if changed)
+    rm -rf ../pb_public/*
+    cp -r client/dist/* ../pb_public/
+    ```
+
+### Transitioning to Secure Credentials (One-Time)
+If you are analyzing an existing deployment where credentials were previously hardcoded:
+
+1.  **Pull the latest code**: Running the `git pull` command above will replace the old `setup_schema.mjs` file (which had credentials) with the new secure version.
+2.  **Create .env file**:
+    You must create the environment variable file on the server for admin scripts to work.
+    ```bash
+    cd ~/allies-connect/source_code/client
+    nano .env
+    ```
+    Add your variables:
+    ```ini
+    ADMIN_EMAIL=pocketbase@dvmccollum.com
+    ADMIN_PASS=your_secure_password
+    ```
+    *(Save: Ctrl+O, Enter, Ctrl+X)*
