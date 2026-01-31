@@ -8,7 +8,10 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+dist-electron
+release
 dist
+.env
 dist-ssr
 *.local
 

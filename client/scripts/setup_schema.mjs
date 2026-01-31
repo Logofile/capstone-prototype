@@ -1,10 +1,16 @@
+import 'dotenv/config';
 import PocketBase from 'pocketbase';
 
 const pb = new PocketBase('http://127.0.0.1:8090');
 
 // CONFIGURATION
-const ADMIN_EMAIL = 'pocketbase@dvmccollum.com';
-const ADMIN_PASS = '%m8wCPMSGv8kt7';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const ADMIN_PASS = process.env.ADMIN_PASS;
+
+if (!ADMIN_EMAIL || !ADMIN_PASS) {
+    console.error('Error: ADMIN_EMAIL or ADMIN_PASS environment variables are missing.');
+    process.exit(1);
+}
 
 async function main() {
     console.log('Connecting to PocketBase...');
