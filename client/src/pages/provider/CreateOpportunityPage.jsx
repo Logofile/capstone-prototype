@@ -17,6 +17,7 @@ export default function CreateOpportunityPage() {
     const [zipCode, setZipCode] = useState('');
     const [date, setDate] = useState('');
     const [shifts, setShifts] = useState([{ id: 'new_1', start: '', end: '', capacity: 5 }]);
+    const [deletedShiftIds, setDeletedShiftIds] = useState([]);
 
     useEffect(() => {
         if (isEditing) {
@@ -95,6 +96,11 @@ export default function CreateOpportunityPage() {
     };
 
     const removeShift = (id) => {
+        const shiftToRemove = shifts.find(s => s.id === id);
+        // If it's a real shift (not new_), mark for deletion
+        if (shiftToRemove && !shiftToRemove.id.toString().startsWith('new_')) {
+            setDeletedShiftIds([...deletedShiftIds, id]);
+        }
         setShifts(shifts.filter(s => s.id !== id));
     };
 
@@ -169,6 +175,13 @@ export default function CreateOpportunityPage() {
                         capacity: parseInt(shift.capacity) || 1,
                         filled: 0
                     }, { requestKey: null }); // IMPORTANT: Disable auto-cancellation
+                }));
+            }
+
+            // Process Deletions
+            if (deletedShiftIds.length > 0) {
+                await Promise.all(deletedShiftIds.map(shiftId => {
+                    return pb.collection('shifts').delete(shiftId);
                 }));
             }
 
