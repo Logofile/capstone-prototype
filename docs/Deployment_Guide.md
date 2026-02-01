@@ -289,6 +289,7 @@ By default, new collections are "Admin Only". You must unlock them.
     **Shifts**:
     -   List/View Rule: **Public** (Click "Unlock" icon, leave empty)
     -   Create Rule: `@request.auth.id != ""`
+    -   Delete Rule: `@request.auth.id != ""`
     
     **Signups**:
     -   List/View Rule: `@request.auth.id != ""`
