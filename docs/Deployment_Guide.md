@@ -226,6 +226,75 @@ Some updates require adding new fields to the database. Since we don't use auto-
     -   **Type**: `Date/Time` -> Name: `date`
     -   **Type**: `Text` -> Name: `zip_code`
 5.  Click **Save Changes**.
+    
+    **(If you are missing the collections completely, see "Full Manual Schema Setup" below)**
+
+### Full Manual Schema Setup
+If your database is empty (only "users"), you must create these collections in order:
+
+#### 1. Organizations
+-   **Name**: `organizations`
+-   **Fields**:
+    -   `name` (Text, Required)
+    -   `description` (Editor)
+    -   `website` (URL)
+    -   `is_verified` (Boolean)
+
+#### 2. Opportunities
+-   **Name**: `opportunities`
+-   **Fields**:
+    -   `title` (Text, Required)
+    -   `organization` (Relation -> `organizations`, Max Select: 1)
+    -   `description` (Editor)
+    -   `is_published` (Boolean)
+    -   `date` (Date/Time)
+    -   `zip_code` (Text)
+    -   `tags` (JSON)
+    -   `form_schema` (JSON)
+    -   `point_of_contact` (JSON)
+
+#### 3. Shifts
+-   **Name**: `shifts`
+-   **Fields**:
+    -   `opportunity` (Relation -> `opportunities`, Max Select: 1, Cascade Delete: True)
+    -   `start` (Date/Time, Required)
+    -   `end` (Date/Time, Required)
+    -   `capacity` (Number, Required)
+    -   `filled` (Number)
+
+#### 4. Signups
+-   **Name**: `signups`
+-   **Fields**:
+    -   `shift` (Relation -> `shifts`, Max Select: 1)
+    -   `user` (Relation -> `users`, Max Select: 1)
+    -   `status` (Select: `pending`, `confirmed`, `cancelled`, `noshow`)
+    -   `form_data` (JSON)
+    -   `reminder_sent` (Date/Time)
+
+#### 5. Configure API Rules (CRITICAL)
+By default, new collections are "Admin Only". You must unlock them.
+1.  Click **Settings** (Gear Icon) for each collection.
+2.  Click **API Rules**.
+3.  Set the following rules (type them in carefully):
+    
+    **Organizations**:
+    -   List/View Rule: **Public** (Click "Unlock" icon, leave empty)
+    -   Create Rule: `@request.auth.id != ""`
+    
+    **Opportunities**:
+    -   List/View Rule: **Public** (Click "Unlock" icon, leave empty)
+    -   Create Rule: `@request.auth.id != ""` (Any logged-in user)
+    -   Update Rule: `@request.auth.id != ""`
+    
+    **Shifts**:
+    -   List/View Rule: **Public** (Click "Unlock" icon, leave empty)
+    -   Create Rule: `@request.auth.id != ""`
+    
+    **Signups**:
+    -   List/View Rule: `@request.auth.id != ""`
+    -   Create Rule: `@request.auth.id != ""`
+
+4.  Click **Save Changes** for each collection.
 
 ### Transitioning to Secure Credentials (One-Time)
 If you are analyzing an existing deployment where credentials were previously hardcoded:
