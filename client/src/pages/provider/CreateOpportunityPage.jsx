@@ -99,6 +99,7 @@ export default function CreateOpportunityPage() {
         const shiftToRemove = shifts.find(s => s.id === id);
         // If it's a real shift (not new_), mark for deletion
         if (shiftToRemove && !shiftToRemove.id.toString().startsWith('new_')) {
+            console.log("Marking shift for deletion:", id);
             setDeletedShiftIds([...deletedShiftIds, id]);
         }
         setShifts(shifts.filter(s => s.id !== id));
@@ -179,8 +180,10 @@ export default function CreateOpportunityPage() {
             }
 
             // Process Deletions
+            console.log("Processing deletions for IDs:", deletedShiftIds);
             if (deletedShiftIds.length > 0) {
                 await Promise.all(deletedShiftIds.map(shiftId => {
+                    console.log("Deleting shift:", shiftId);
                     return pb.collection('shifts').delete(shiftId);
                 }));
             }
