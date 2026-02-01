@@ -57,17 +57,13 @@ export default function RootLayout() {
 
                     {/* Desktop Navigation - Hidden on mobile */}
                     <nav className="hidden md:flex space-x-6 items-center">
-                        <Link to="/opportunities" className="hover:text-teal-200 transition-colors">Find Help</Link>
                         {/* <Link to="/volunteer" className="hover:text-teal-200 transition-colors">Volunteer</Link> */}
 
                         {isLoggedIn ? (
                             <div className="flex items-center gap-4">
-                                <span className="text-teal-100 text-sm">
+                                <span className="text-white hover:text-teal-200 transition-colors font-medium cursor-default">
                                     Hello, {user?.name || user?.email}
                                 </span>
-                                {user?.type === 'provider' && (
-                                    <Link to="/provider/dashboard" className="hover:text-teal-200 transition-colors font-semibold">Dashboard</Link>
-                                )}
                                 <button
                                     onClick={handleLogout}
                                     className="px-4 py-2 bg-teal-800 text-white rounded-lg hover:bg-teal-900 transition-colors font-medium border border-teal-600"

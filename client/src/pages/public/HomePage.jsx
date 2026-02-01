@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
+import pb from '../../lib/pocketbase';
 
 export default function HomePage() {
+    const isProvider = pb.authStore.model?.type === 'provider';
+
     return (
         <div className="space-y-8">
             {/* Hero Section */}
@@ -15,9 +18,15 @@ export default function HomePage() {
                     <Link to="/opportunities" className="px-6 py-3 bg-teal-600 text-white rounded-lg font-semibold shadow-lg hover:bg-teal-700 transition transform hover:-translate-y-0.5">
                         Find Resources
                     </Link>
-                    <Link to="/register" className="px-6 py-3 bg-white text-teal-600 border border-teal-600 rounded-lg font-semibold shadow hover:bg-gray-50 transition">
-                        Volunteer Now
-                    </Link>
+                    {isProvider ? (
+                        <Link to="/provider/dashboard" className="px-6 py-3 bg-white text-teal-600 border border-teal-600 rounded-lg font-semibold shadow hover:bg-gray-50 transition">
+                            Dashboard
+                        </Link>
+                    ) : (
+                        <Link to="/register" className="px-6 py-3 bg-white text-teal-600 border border-teal-600 rounded-lg font-semibold shadow hover:bg-gray-50 transition">
+                            Volunteer Now
+                        </Link>
+                    )}
                 </div>
             </section>
         </div>
