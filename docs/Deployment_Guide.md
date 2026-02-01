@@ -215,6 +215,18 @@ To update your deployed application (frontend changes or code updates):
     sudo systemctl restart pocketbase
     ```
 
+### 3. Database Schema Updates
+Some updates require adding new fields to the database. Since we don't use auto-migrations for this prototype, you must add them manually in the Admin UI.
+
+**For "Zip Code" and "Date" Update:**
+1.  Login to Admin UI (`/mn`).
+2.  Go to **Collections** > **opportunities**.
+3.  Click **Settings** (Gear Icon) or **Edit Collection**.
+4.  Add Field:
+    -   **Type**: `Date/Time` -> Name: `date`
+    -   **Type**: `Text` -> Name: `zip_code`
+5.  Click **Save Changes**.
+
 ### Transitioning to Secure Credentials (One-Time)
 If you are analyzing an existing deployment where credentials were previously hardcoded:
 

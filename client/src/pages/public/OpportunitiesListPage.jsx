@@ -67,10 +67,15 @@ export default function OpportunitiesListPage() {
                         <Link key={opp.id} to={`/opportunities/${opp.id}`} className="block group">
                             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 h-full hover:shadow-md transition-shadow">
                                 <div className="mb-2">
-                                    <span className="text-xs font-bold text-teal-600 uppercase tracking-wide">
+                                    <span className="text-sm font-semibold text-gray-700">
                                         {opp.expand?.organization?.name || 'Community Organization'}
                                     </span>
                                 </div>
+                                {opp.date && (
+                                    <div className="text-xs font-medium text-gray-500 mb-2">
+                                        • {new Date(opp.date).toLocaleDateString()}
+                                    </div>
+                                )}
                                 <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-teal-700 transition-colors">
                                     {opp.title}
                                 </h3>
@@ -78,7 +83,6 @@ export default function OpportunitiesListPage() {
                                     {opp.description}
                                 </p>
                                 <div className="flex justify-between items-center mt-auto">
-                                    {/* Tags Placeholder */}
                                     <div className="flex gap-1">
                                         {/* {opp.tags?.map(t => <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">{t}</span>)} */}
                                     </div>
@@ -91,6 +95,6 @@ export default function OpportunitiesListPage() {
                     ))
                 )}
             </div>
-        </div>
+        </div >
     );
 }

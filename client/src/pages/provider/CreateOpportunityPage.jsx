@@ -14,6 +14,8 @@ export default function CreateOpportunityPage() {
     // Default values
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [zipCode, setZipCode] = useState('');
+    const [date, setDate] = useState('');
 
     useEffect(() => {
         if (isEditing) {
@@ -22,6 +24,11 @@ export default function CreateOpportunityPage() {
                     const record = await pb.collection('opportunities').getOne(id);
                     setTitle(record.title);
                     setDescription(record.description || '');
+                    setZipCode(record.zip_code || '');
+                    // Format date for datetime-local input (YYYY-MM-DDTHH:MM)
+                    if (record.date) {
+                        setDate(new Date(record.date).toISOString().slice(0, 16));
+                    }
                     if (record.form_schema?.fields) {
                         setFormFields(record.form_schema.fields);
                     }
@@ -82,6 +89,8 @@ export default function CreateOpportunityPage() {
         const data = {
             title: formData.get('title'),
             description: formData.get('description'),
+            zip_code: formData.get('zip_code'),
+            date: formData.get('date') ? new Date(formData.get('date')).toISOString() : null,
             // Only update organization if creating? Or always? Usually shouldn't change owner org on edit.
             // If editing, we might omit organization or keep it.
             // But PocketBase rules might require it or not. Let's pass it if we have it, or just omit if undefined.

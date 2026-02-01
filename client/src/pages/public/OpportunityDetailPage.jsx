@@ -129,6 +129,25 @@ export default function OpportunityDetailPage() {
                             {opportunity.expand?.organization?.name || 'Overview'}
                         </span>
                         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">{opportunity.title}</h1>
+
+                        <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-600">
+                            {opportunity.date && (
+                                <div className="flex items-center gap-1">
+                                    <span className="text-lg">📅</span>
+                                    <span className="font-medium">
+                                        {new Date(opportunity.date).toLocaleDateString()} at {new Date(opportunity.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </span>
+                                </div>
+                            )}
+                            {opportunity.zip_code && (
+                                <div className="flex items-center gap-1">
+                                    <span className="text-lg">📍</span>
+                                    <span className="font-medium">
+                                        {opportunity.zip_code}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div className="prose max-w-none text-gray-700 mb-8 whitespace-pre-wrap">
