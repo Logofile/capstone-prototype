@@ -146,18 +146,20 @@ export default function CreateOpportunityPage() {
             }
 
             // Save Shifts
-            // MVP: Just create new shifts. Real implementation would diff/update/delete.
-            // Only save valid shifts (must have start/end)
-            const validShifts = shifts.filter(s => s.start && s.end);
-            if (validShifts.length > 0) {
-                await Promise.all(validShifts.map(shift => {
+            // 1. Filter for valid shifts that are NEW (have 'new_' prefix in ID)
+            // Existing shifts (real IDs) are not updated in this MVP flow to avoid complexity.
+            const newShifts = shifts.filter(s => s.start && s.end && s.id.toString().startsWith('new_'));
+
+            if (newShifts.length > 0) {
+                // Use Promise.all but disable auto-cancellation for each request
+                await Promise.all(newShifts.map(shift => {
                     return pb.collection('shifts').create({
                         opportunity: record.id,
                         start: new Date(shift.start).toISOString(),
                         end: new Date(shift.end).toISOString(),
                         capacity: parseInt(shift.capacity) || 1,
                         filled: 0
-                    });
+                    }, { requestKey: null }); // IMPORTANT: Disable auto-cancellation
                 }));
             }
 
