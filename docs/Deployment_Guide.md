@@ -110,20 +110,20 @@ cp -r source_code/client/dist pb_public
 
 Run PocketBase in the background.
 
-### 4.1 Create Service File
-```bash
-sudo nano /etc/systemd/system/pocketbase.service
-```
-
-### 4.2 Make Binary Capable of Port 80
+### 4.1 Make Binary Capable of Port 80
 By default, the `ec2-user` cannot use port 80. Run this command to allow it:
 ```bash
 sudo setcap cap_net_bind_service=+ep /home/ec2-user/allies-connect/pocketbase
 ```
 
-### 4.3 Paste Configuration
-Paste the following content.
-**IMPORTANT:** Copy the `ExecStart` line exactly. Do NOT add quotes around the IP address or flags.
+### 4.2 Create Service File
+Open the service file editor:
+```bash
+sudo nano /etc/systemd/system/pocketbase.service
+```
+
+**Paste the following content into the file:**
+(IMPORTANT: Copy the `ExecStart` line exactly. Do NOT add quotes around the IP address or flags.)
 
 ```ini
 [Unit]
@@ -140,6 +140,8 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 ```
+*(Save the file: Press `Ctrl+O`, then `Enter`, then `Ctrl+X` to exit)*
+
 *Note: Using port 80 requires this service to run effectively as root or have capabilities, but systemd handles it. If it fails, try port 8090 and update firewall.*
 
 ### 4.4 Start Service
@@ -203,7 +205,14 @@ To update your deployed application (frontend changes or code updates):
     
     # 2. Update frontend assets (if changed)
     rm -rf ../pb_public/*
+    mkdir -p ../pb_public
     cp -r client/dist/* ../pb_public/
+    ```
+
+3.  **Restart Service** (Recommended):
+    Ensures clear caches and loads any new environment variables.
+    ```bash
+    sudo systemctl restart pocketbase
     ```
 
 ### Transitioning to Secure Credentials (One-Time)
