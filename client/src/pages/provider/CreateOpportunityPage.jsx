@@ -33,6 +33,21 @@ export default function CreateOpportunityPage() {
                     if (record.form_schema?.fields) {
                         setFormFields(record.form_schema.fields);
                     }
+
+                    // Fetch existing shifts
+                    const shiftRecords = await pb.collection('shifts').getList(1, 50, {
+                        filter: `opportunity = "${id}"`,
+                        sort: 'start'
+                    });
+
+                    if (shiftRecords.items.length > 0) {
+                        setShifts(shiftRecords.items.map(s => ({
+                            id: s.id,
+                            start: s.start ? new Date(s.start).toISOString().slice(0, 16) : '',
+                            end: s.end ? new Date(s.end).toISOString().slice(0, 16) : '',
+                            capacity: s.capacity
+                        })));
+                    }
                 } catch (e) {
                     console.error("Error fetching opportunity to edit", e);
                     alert("Could not load opportunity.");
