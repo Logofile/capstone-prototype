@@ -61,7 +61,7 @@ export default function RootLayout() {
 
                         {isLoggedIn ? (
                             <div className="flex items-center gap-4">
-                                <span className="text-white hover:text-teal-200 transition-colors font-medium cursor-default">
+                                <span className="text-white font-medium cursor-default">
                                     Hello, {user?.name || user?.email}
                                 </span>
                                 <button
