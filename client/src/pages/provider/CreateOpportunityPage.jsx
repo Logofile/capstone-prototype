@@ -16,6 +16,7 @@ export default function CreateOpportunityPage() {
     const [description, setDescription] = useState('');
     const [zipCode, setZipCode] = useState('');
     const [date, setDate] = useState('');
+    const [shifts, setShifts] = useState([{ id: 'new_1', start: '', end: '', capacity: 5 }]);
 
     useEffect(() => {
         if (isEditing) {
@@ -64,6 +65,19 @@ export default function CreateOpportunityPage() {
         setFormFields(formFields.filter(f => f.id !== id));
     };
 
+    // Shift Management
+    const addShift = () => {
+        setShifts([...shifts, { id: `new_${Date.now()}`, start: '', end: '', capacity: 5 }]);
+    };
+
+    const removeShift = (id) => {
+        setShifts(shifts.filter(s => s.id !== id));
+    };
+
+    const updateShift = (id, key, value) => {
+        setShifts(shifts.map(s => s.id === id ? { ...s, [key]: value } : s));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -109,11 +123,29 @@ export default function CreateOpportunityPage() {
         };
 
         try {
+            let record;
             if (isEditing) {
-                await pb.collection('opportunities').update(id, data);
+                record = await pb.collection('opportunities').update(id, data);
             } else {
-                await pb.collection('opportunities').create(data);
+                record = await pb.collection('opportunities').create(data);
             }
+
+            // Save Shifts
+            // MVP: Just create new shifts. Real implementation would diff/update/delete.
+            // Only save valid shifts (must have start/end)
+            const validShifts = shifts.filter(s => s.start && s.end);
+            if (validShifts.length > 0) {
+                await Promise.all(validShifts.map(shift => {
+                    return pb.collection('shifts').create({
+                        opportunity: record.id,
+                        start: new Date(shift.start).toISOString(),
+                        end: new Date(shift.end).toISOString(),
+                        capacity: parseInt(shift.capacity) || 1,
+                        filled: 0
+                    });
+                }));
+            }
+
             navigate('/provider/dashboard');
         } catch (err) {
             console.error("Error saving opportunity:", err);
@@ -157,6 +189,71 @@ export default function CreateOpportunityPage() {
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
                             placeholder="Describe the activity, requirements, and impact..."
                         />
+                    </div>
+                </section>
+
+                {/* Shifts Section */}
+                <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
+                    <div className="flex justify-between items-center border-b pb-2">
+                        <h2 className="text-xl font-semibold text-gray-800">Volunteer Shifts</h2>
+                        <button
+                            type="button"
+                            onClick={addShift}
+                            className="text-sm bg-teal-50 text-teal-700 px-3 py-1 rounded-md font-medium hover:bg-teal-100 transition"
+                        >
+                            + Add Shift
+                        </button>
+                    </div>
+
+                    <div className="space-y-4">
+                        {shifts.map((shift, index) => (
+                            <div key={shift.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                <div className="md:col-span-1 flex items-center h-full pb-2 font-bold text-gray-400">
+                                    #{index + 1}
+                                </div>
+                                <div className="md:col-span-4">
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">Start Time</label>
+                                    <input
+                                        type="datetime-local"
+                                        value={shift.start}
+                                        onChange={(e) => updateShift(shift.id, 'start', e.target.value)}
+                                        required
+                                        className="w-full px-3 py-2 border border-gray-300 rounded text-sm bg-white"
+                                    />
+                                </div>
+                                <div className="md:col-span-4">
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">End Time</label>
+                                    <input
+                                        type="datetime-local"
+                                        value={shift.end}
+                                        onChange={(e) => updateShift(shift.id, 'end', e.target.value)}
+                                        required
+                                        className="w-full px-3 py-2 border border-gray-300 rounded text-sm bg-white"
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">Capacity</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={shift.capacity}
+                                        onChange={(e) => updateShift(shift.id, 'capacity', e.target.value)}
+                                        required
+                                        className="w-full px-3 py-2 border border-gray-300 rounded text-sm bg-white"
+                                    />
+                                </div>
+                                <div className="md:col-span-1 text-right">
+                                    <button
+                                        type="button"
+                                        onClick={() => removeShift(shift.id)}
+                                        className="text-gray-400 hover:text-red-500 p-2"
+                                        title="Remove Shift"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </section>
 
