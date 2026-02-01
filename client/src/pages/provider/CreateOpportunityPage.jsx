@@ -26,9 +26,18 @@ export default function CreateOpportunityPage() {
                     setTitle(record.title);
                     setDescription(record.description || '');
                     setZipCode(record.zip_code || '');
-                    // Format date for datetime-local input (YYYY-MM-DDTHH:MM)
+                    // Helper to convert UTC date to Local ISO string for input (YYYY-MM-DDThh:mm)
+                    const toLocalISO = (isoString) => {
+                        if (!isoString) return '';
+                        const date = new Date(isoString);
+                        // Subtract timezone offset to get local time represented as UTC
+                        const local = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+                        return local.toISOString().slice(0, 16);
+                    };
+
+                    // Format date for datetime-local input
                     if (record.date) {
-                        setDate(new Date(record.date).toISOString().slice(0, 16));
+                        setDate(toLocalISO(record.date));
                     }
                     if (record.form_schema?.fields) {
                         setFormFields(record.form_schema.fields);
@@ -43,8 +52,8 @@ export default function CreateOpportunityPage() {
                     if (shiftRecords.items.length > 0) {
                         setShifts(shiftRecords.items.map(s => ({
                             id: s.id,
-                            start: s.start ? new Date(s.start).toISOString().slice(0, 16) : '',
-                            end: s.end ? new Date(s.end).toISOString().slice(0, 16) : '',
+                            start: toLocalISO(s.start),
+                            end: toLocalISO(s.end),
                             capacity: s.capacity
                         })));
                     }
